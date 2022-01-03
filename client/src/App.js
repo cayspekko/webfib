@@ -10,6 +10,9 @@ function App() {
     <Router>
       <div className="App">
         <header className="App-header">
+          <div>
+            <h1>Fib app</h1>
+          </div>
           <Link to="/">Home</Link>
           <Link to="/otherpage">Other Page</Link>
         </header>
