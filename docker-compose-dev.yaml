@@ -1,0 +1,53 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:alpine
+    environment:
+      - POSTGRES_PASSWORD=postgres_password
+  redis:
+    image: redis:alpine
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - "80:80"
+
+  webfib_server:
+    image: cayspekko/webfib_server
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes:
+      - /app/node_modules
+      - ./server:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+
+  webfib_worker:
+    image: cayspekko/webfib_worker
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+  webfib:
+    stdin_open: true
+    image: cayspekko/webfib
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./client
+    # volumes:
+    #   - /app/node_modules
+    #   - ./client:/app

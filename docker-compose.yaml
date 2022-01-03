@@ -1,53 +1,34 @@
 version: '3'
 services:
-  postgres:
-    image: postgres:alpine
-    environment:
-      - POSTGRES_PASSWORD=postgres_password
-  redis:
-    image: redis:alpine
   nginx:
-    restart: always
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./nginx
+    image: cayspekko/webfib_nginx
+    mem_limit: 128m
+    hostname: nginx
     ports:
       - "80:80"
 
   webfib_server:
     image: cayspekko/webfib_server
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./server
-    volumes:
-      - /app/node_modules
-      - ./server:/app
+    mem_limit: 128m
+    hostname: webfib_server
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - PGUSER=postgres
-      - PGHOST=postgres
-      - PGPASSWORD=postgres_password
-      - PGPORT=5432
+      - REDIS_HOST=$REDIS_HOST
+      - REDIS_PORT=$REDIS_PORT
+      - PGUSER=$PGUSER
+      - PGHOST=$PGHOST
+      - PGDATABASE=$PGDATABASE
+      - PGPASSWORD=$PGPASSWORD
+      - PGPORT=$PGPORT
 
   webfib_worker:
     image: cayspekko/webfib_worker
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./worker
-    volumes:
-      - /app/node_modules
-      - ./worker:/app
+    mem_limit: 128m
+    hostname: webfib_worker
     environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
+      - REDIS_HOST=$REDIS_HOST
+      - REDIS_PORT=$REDIS_PORT
 
   webfib:
-    stdin_open: true
     image: cayspekko/webfib
-    build:
-      dockerfile: Dockerfile.dev
-      context: ./client
-    # volumes:
-    #   - /app/node_modules
-    #   - ./client:/app
+    mem_limit: 128m
+    hostname: webfib

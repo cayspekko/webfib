@@ -21,3 +21,15 @@ after_success:
   - docker push cayspekko/webfib_nginx
   - docker push cayspekko/webfib_server
   - docker push cayspekko/webfib_worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-west-2"
+  app: "webfib"
+  env: "Webfib-env"
+  bucket_name: "elasticbeanstalk-us-west-2-075356433460"
+  bucket_path: "webfib"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
